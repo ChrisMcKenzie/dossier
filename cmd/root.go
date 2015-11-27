@@ -22,11 +22,9 @@ import (
 
 	"github.com/ChrisMcKenzie/dossier/driver"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var cfgFile string
-var host string
+var prefix, path string
 
 // This represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
@@ -42,7 +40,8 @@ data volume for other containers.`,
 			log.Fatal(err)
 		}
 
-		err = fs.WatchFS("configs", "./test")
+		fmt.Println(prefix, path)
+		err = fs.WatchFS(prefix, path)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -59,28 +58,7 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
-	// Here you will define your flags and configuration settings
-	// Cobra supports Persistent Flags which if defined here will be global for your application
-
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.dossier.yaml)")
-
 	// Cobra also supports local flags which will only run when this action is called directly
-	RootCmd.PersistentFlags().StringVar(&host, "host", "", "the prefix of the kv")
-}
-
-// Read in config file and ENV variables if set.
-func initConfig() {
-	if cfgFile != "" { // enable ability to specify config file via flag
-		viper.SetConfigFile(cfgFile)
-	}
-
-	viper.SetConfigName(".dossier") // name of config file (without extension)
-	viper.AddConfigPath("$HOME")    // adding home directory as first search path
-	viper.AutomaticEnv()            // read in environment variables that match
-
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
-	}
+	RootCmd.PersistentFlags().StringVar(&prefix, "prefix", "", "the prefix of the kv")
+	RootCmd.PersistentFlags().StringVar(&path, "base", "", "the base wher files will be written")
 }

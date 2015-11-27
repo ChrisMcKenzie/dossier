@@ -1,7 +1,6 @@
-FROM scratch
+FROM busybox
 
-RUN mkdir -p /usr/local/bin /var/dossier
+ADD dossier /usr/local/bin/dossier
 
-ADD dossier /usr/local/bin
-
-ENTRYPOINT dossier
+ENTRYPOINT ["/usr/local/bin/dossier"]
+CMD ["--base=/var"]
